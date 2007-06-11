@@ -1,0 +1,4 @@
+EXCLUDE
+Makefile.old
+{arch}
+,,undo*
