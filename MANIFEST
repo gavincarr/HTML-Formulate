@@ -14,6 +14,8 @@ t/10_submit.t
 t/11_format.t
 t/12_select.t
 t/13_labels.t
+t/15_examples.t
+t/16_use_name_as_id.t
 t/t01/simple1
 t/t01/simple2
 t/t02/fbwb
@@ -69,3 +71,5 @@ t/t13/empty
 t/t13/explicit
 t/t15/login
 t/t15/register
+t/t16/login
+t/t16/register

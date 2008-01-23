@@ -1,6 +1,6 @@
 # Miscellaneous label tests
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -63,6 +63,7 @@ $form = $f->render($d, {
     emp_name => 'Name',
     emp_title => 'Title',
     emp_birth_dt => 'Birth Date',
+    submit => 'Save',
   },
 });
 report $form, "explicit";
@@ -75,10 +76,24 @@ $form = $f->render($d, {
     emp_name => { label => 'Name' },
     emp_title => { label => 'Title' },
     emp_birth_dt => { label => 'Birth Date' },
+    submit => { label => 'Save' },
   },
 });
 report $form, "explicit";
 is($form, $result{explicit}, "label attributes");
+
+# Explicit label attributes II
+$form = $f->render($d, {
+  fields => [ qw(emp_id emp_name emp_title emp_birth_dt) ],
+  field_attr => {
+    emp_name => { label => 'Name' },
+    emp_title => { label => 'Title' },
+    emp_birth_dt => { label => 'Birth Date' },
+    submit => { value => 'Save' },
+  },
+});
+report $form, "explicit";
+is($form, $result{explicit}, "label attributes II");
 
 # Empty labels 
 $form = $f->render($d, {

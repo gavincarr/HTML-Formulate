@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.07';
+$VERSION = '0.09';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -38,6 +38,8 @@ my %VALID_ARG = (
     errors_where => 'SCALAR',
     # errors_format: subroutine to format/render 'top' style error messages
     errors_format => 'SCALAR/CODE',
+    # use_name_as_id: add 'name' as 'id' field to input-type fields if none set
+    use_name_as_id => 'SCALAR',
 );
 my %VALID_FIELDS = (
     # primary key defaults (deprecated?)
@@ -114,6 +116,7 @@ sub init
         hidden => {},
 #       submit => [ 'submit' ],
         xhtml => 1,
+        use_name_as_id => 0,
         null => '&nbsp;',
         errors_where => 'top',
         errors_format => sub {
@@ -278,6 +281,22 @@ sub prerender_munge
 #   }
 }
 
+
+# -------------------------------------------------------------------------
+# Override start_tag to add explicit 'id' fields if use_name_as_id is set
+#
+sub start_tag
+{
+    my $self = shift;
+    my $tag = shift;
+    my $attr = shift;
+    if ($self->{defn_t}->{use_name_as_id} && 
+        $tag =~ qr/^(input|select|textarea)$/ && 
+        exists $attr->{name}) {
+      $attr->{id} ||= $attr->{name};
+    }
+    return $self->SUPER::start_tag($tag, $attr, @_);
+}
 
 # -------------------------------------------------------------------------
 # Render cells as appropriate input type etc.
@@ -616,7 +635,8 @@ sub submit
         }
         my $field_id = lc $field;
         $field_id =~ s/\s+/_/g;
-        my $field_value = join(' ', map { ucfirst } split /\s+/, $field);
+        my $field_value = $fattr->{value} || $fattr->{label} || 
+          join(' ', map { ucfirst } split /\s+/, $field);
         $out .= $self->start_tag('input', {
           type => 'submit', name => $field_id, id => $field_id, value => $field_value,
           %{$fattr->{input_attr}}
@@ -1007,6 +1027,12 @@ Default is a subref that renders messages like this:
 
 producing red bold error messages, which can be overridden by 
 defining a CSS 'error' class.
+
+=item use_name_as_id 
+
+Boolean. If true, HTML::Formulate will add an id attribute set
+to the field name on any input/select/textarea fields that do
+not have an id.
 
 =back
 
