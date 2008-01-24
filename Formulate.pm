@@ -978,14 +978,32 @@ field => value pairs. Hiddens can also be defined within a field
 attribute section by setting the field type to 'hidden'.
 Default: none.
 
+=item use_name_as_id 
+
+Boolean. If true, HTML::Formulate will add an id attribute set
+to the field name on any input/select/textarea fields that do
+not have an id.
+
 =item errors
 
 Hashref defining a set of field => error_message pairs to be displayed
 as errors on the form (multiple error messages per field are also 
 supported by making the value an arrayref of error messages).
 
-In a similar way to 'required' fields, error field labels are by
-default rendered as:
+Errors are displayed in two ways: the list error messages are 
+error messages is displayed either above the form or in a third 
+column within the form (see 'errors_where' to control which); and
+error field labels are modified to indicate an error.
+
+Error messages are listed in form field order if the error key
+is recognised as a field name ('field errors'); any others are not 
+recognised as field names ('extra errors') are listed after this.
+Field errors are treated as sprintf messages, with a '%s' in the
+message replaced by the field label, but extra errors are not so
+treated (i.e. are just rendered as literals).
+
+Field error labels are by default rendered in a similar way to 
+'required' fields, like this:
 
   <th style="color:red"><span class="error_field">Label</span></th>
 
@@ -1027,12 +1045,6 @@ Default is a subref that renders messages like this:
 
 producing red bold error messages, which can be overridden by 
 defining a CSS 'error' class.
-
-=item use_name_as_id 
-
-Boolean. If true, HTML::Formulate will add an id attribute set
-to the field name on any input/select/textarea fields that do
-not have an id.
 
 =back
 
