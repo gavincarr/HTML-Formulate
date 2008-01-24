@@ -1,6 +1,6 @@
 # Edit form testing
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -78,7 +78,16 @@ $form = $f->render($d, {
   },
 });
 report $form, "submit1";
-is($form, $result{submit1}, "submit buttons 1");
+is($form, $result{submit1}, "submit buttons 1, scalar vlabel");
+
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  field_attr => {
+    emp_id => { type => 'static', vlabel => sub { sprintf 'E%05d', shift } },
+  },
+});
+report $form, "submit1";
+is($form, $result{submit1}, "submit buttons 1, sub vlabel");
 
 $form = $f->render($d, {
   submit => [ qw(save cancel) ],

@@ -31,6 +31,8 @@ my %VALID_ARG = (
     # required: list of required/mandatory fields, or tokens 'ALL' or 'NONE'
     required => 'ARRAY/SCALAR',
     # errors: hashref of field => (scalar/array of) validation-error-messages
+    # use_name_as_id: add 'name' as 'id' field to input-type fields if none set
+    use_name_as_id => 'SCALAR',
     errors => 'HASH',
     # errors_where: where to display validation error messages:
     #   top: above form table (default)
@@ -38,8 +40,6 @@ my %VALID_ARG = (
     errors_where => 'SCALAR',
     # errors_format: subroutine to format/render 'top' style error messages
     errors_format => 'SCALAR/CODE',
-    # use_name_as_id: add 'name' as 'id' field to input-type fields if none set
-    use_name_as_id => 'SCALAR',
 );
 my %VALID_FIELDS = (
     # primary key defaults (deprecated?)
@@ -328,7 +328,19 @@ sub cell_content
         if defined $self->{defn_t}->{null} && defined $fattr->{value} &&
             $fattr->{value} eq $self->{defn_t}->{null};
     if ($fattr->{type} eq 'static' || $fattr->{type} eq 'display') {
-        $out .= $fattr->{vlabel} ? sprintf $fattr->{vlabel}, $value : $value;
+        if ($fattr->{vlabel}) {
+          if (ref $fattr->{vlabel}) {
+            if (ref $fattr->{vlabel} eq 'CODE') {
+              $out .= $fattr->{vlabel}->($value, $row, $field);
+            }
+          }
+          else {
+            $out .= sprintf $fattr->{vlabel}, $value;
+          }
+        }
+        else {
+          $out .= $value;
+        }
         delete $fattr->{vlabel};
         $out .= $self->start_tag('input', 
             { type => 'hidden', name => $field, value => $value }, 'close') 
@@ -689,10 +701,10 @@ sub top_errors
     # Report any remaining (presumably non-field-specific) errors
     for my $extra (sort keys %errors) {
         if (ref $errors{$extra} eq 'ARRAY') {
-            push @errors, $_ foreach @{$errors{$extra}};
+            push @errors, sprintf($_, $extra) foreach @{$errors{$extra}};
         }
         else {
-            push @errors, $errors{$extra};
+            push @errors, sprintf($errors{$extra}, $extra);
         }
     }
     return '' unless @errors;
@@ -998,9 +1010,10 @@ error field labels are modified to indicate an error.
 Error messages are listed in form field order if the error key
 is recognised as a field name ('field errors'); any others are not 
 recognised as field names ('extra errors') are listed after this.
-Field errors are treated as sprintf messages, with a '%s' in the
-message replaced by the field label, but extra errors are not so
-treated (i.e. are just rendered as literals).
+Error messages are treated as sprintf messages, with a '%s' in the
+message replaced by the field label (for field errors) or the error
+key (for extra errors). Errors without %s placeholders therefore 
+just get rendered as literals.
 
 Field error labels are by default rendered in a similar way to 
 'required' fields, like this:
@@ -1135,9 +1148,10 @@ is rendered as the following line:
   </td></tr>
 
 (some formatting newlines added). If you want to use a different label
-than the underlying data value, you can set a (scalar) vlabel, similar
-to selects. The vlabel is interpreted as a sprintf pattern passed the
-current data value i.e. $label = sprintf($vlabel,$value). For example:
+than the underlying data value, you can set a scalar or coderef 'vlabel', 
+similar to selects. A scalar vlabel is interpreted as a sprintf pattern 
+passed the current data value i.e. $label = sprintf($vlabel,$value). 
+For example:
 
   emp_id => { type => 'static', value => '123', vlabel => 'E%05d' }
 
@@ -1148,6 +1162,15 @@ is rendered as:
   </td></tr>
 
 (newlines added).
+
+A coderef vlabel is passed the standard arguments: value, row, field e.g.
+
+  emp_id => { type => 'static', value => '123', vlabel => sub {
+    my ($value, $row, $field) = @_;
+    sprintf 'E%05d', $value;
+  }}
+
+renders the same as the previous example.
 
 =item omit
 
