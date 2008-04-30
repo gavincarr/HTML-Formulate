@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -30,9 +30,9 @@ my %VALID_ARG = (
     hidden => 'ARRAY/HASH',
     # required: list of required/mandatory fields, or tokens 'ALL' or 'NONE'
     required => 'ARRAY/SCALAR',
-    # errors: hashref of field => (scalar/array of) validation-error-messages
     # use_name_as_id: add 'name' as 'id' field to input-type fields if none set
     use_name_as_id => 'SCALAR',
+    # errors: hashref of field => (scalar/array of) validation-error-messages
     errors => 'HASH',
     # errors_where: where to display validation error messages:
     #   top: above form table (default)
@@ -399,6 +399,69 @@ sub cell_content
                 $out .= $self->end_tag('option');
             }
             $out .= $self->end_tag('select');
+        }
+    }
+    # Radio fields
+    elsif ($fattr->{type} eq 'radio') {
+        my $values = $fattr->{values};
+        # Allow code on values
+        if (ref $values eq 'CODE') {
+            my @values = $values->($field, $row);
+            $values = @values == 1 && ref $values[0] ? $values[0] : \@values;
+        }
+        if (ref $values eq 'ARRAY' && @$values) {
+#           $out .= $self->start_tag('select', 
+#               { %{$fattr->{input_attr}}, name => $field });
+            my $vlabels = $fattr->{vlabels} || {};
+            # Iterate over values
+            my @out = ();
+            for (my $i = 0; $i <= $#$values; $i++) {
+                my $v = $values->[$i];
+                my $oattr = {};
+                $oattr->{value} = $v if defined $v;
+                if (defined $value) {
+                    # Multi-values make sense in select contexts
+                    if (ref $value eq 'ARRAY') {
+                        $oattr->{selected} = 'selected' 
+                            if grep { $v eq $_ } @$value;
+                    } else {
+                        $oattr->{selected} = 'selected' if $v eq $value;
+                    }
+                }
+                my $input = $self->start_tag('input', {
+                    %{$fattr->{input_attr}}, name => $field, type => 'radio', 
+                    (defined $v ? (value => $v) : ()),
+                    (defined $value && ! ref $value && defined $v && $v eq $value
+                        ? (checked => 'checked') 
+                        : ()),
+                }, 'close');
+                my $vlabel = '';
+                if (ref $vlabels eq 'CODE') {
+                    # Two styles are supported for vlabel subroutines - the sub
+                    # can either just return a single label based on the given
+                    # value, or the first invocation can return an arrayref or
+                    # hashref containing the whole set of labels
+                    my @vlabels = $vlabels->($v, $field, $row);
+                    $vlabel = @vlabels == 1 ? $vlabels[0] : \@vlabels;
+                    # Replace vlabels if arrayref or hashref returned
+                    if (ref $vlabel) {
+                        $vlabels = $vlabel;
+                        $vlabel = '';
+                    }
+                }
+                if (ref $vlabels eq 'HASH') {
+                    $vlabel = $vlabels->{$v};
+                }
+                elsif (ref $vlabels eq 'ARRAY') {
+                    $vlabel = $vlabels->[$i];
+                }
+                $vlabel = $v if ! defined $vlabel or $vlabel eq '';
+
+                # TODO: need a way of controlling the format used here
+                push @out, "$vlabel&nbsp;$input";
+            }
+            # TODO: need a way of designating the join here too
+            $out .= join('  ', @out);
         }
     }
     # Hidden fields

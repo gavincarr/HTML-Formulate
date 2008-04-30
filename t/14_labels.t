@@ -5,7 +5,7 @@ BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
 # Load result strings
-my $test = 't13';
+my $test = 't14';
 my %result = ();
 $test = "t/$test" if -d "t/$test";
 die "missing data dir $test" unless -d $test;
