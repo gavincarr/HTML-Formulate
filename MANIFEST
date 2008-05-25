@@ -13,7 +13,7 @@ t/09_field_table_attr.t
 t/10_submit.t
 t/11_format.t
 t/12_select.t
-t/12_radio.t
+t/13_radio.t
 t/14_labels.t
 t/15_examples.t
 t/16_use_name_as_id.t
