@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -308,8 +308,10 @@ sub cell_content
     $fattr ||= $self->{defn_t}->{field}->{$field} || {};
     $fattr->{type} ||= 'text' if $row;
 
-    # No special handling required for labels or 'table' forms
-    if (! defined $row or $self->{defn_t}->{formtype} eq 'table') {
+    # No special handling required for labels or 'table' forms or composites
+    if (! defined $row or 
+           $self->{defn_t}->{formtype} eq 'table' or 
+           $fattr->{composite}) {
         my ($fvalue, $value) = $self->SUPER::cell_content(@_);
         # Cache label values for later e.g. error_messages
         $self->{defn_t}->{_labels}->{$field} = $value if ! defined $row;
@@ -1252,15 +1254,34 @@ alternative to including it in a 'required' arrayref at the top-level.
 
 =item values
 
-An arrayref defining a list of possible values for a field, typically 
-used in defining the possible values of a list field e.g. a select, 
-checkbox set, etc.
+An arrayref or subroutine defining (or returning) a list of possible 
+values for a field, typically used in defining the possible values of a 
+list field e.g. a select, checkbox set, etc.
+
+If a subroutine, it is called as follows:
+
+  $values_sub->( $field, $row );
+
+where $field is the field name, and $row is the current data row. It 
+is expected to return a arrayref of values to use.
 
 =item vlabels
 
-An arrayref corresponding to the values arrayref above, defining a list 
-of labels to be associated with the corresponding value. Alternatively, 
-may be a hashref defining value => label correspondences explicitly.
+An arrayref or subroutine defining (or returning) a list of labels to
+be associated with the corresponding items in the values arrayref 
+above. Alternatively, it may be (or return) a hashref defining 
+value => label correspondences explicitly.
+
+If a subroutine, it is called as follows:
+
+  $vlabels_sub->( $v, $field, $row )
+
+where $v is the current value, $field is the field name, and $row is the 
+current data row. The subroutine may return any of the following: an
+arrayref defining the entire list of labels for this field, in the same
+order as the values arrayref; a hashref defining the entire set of labels
+for this field, mapping values to labels; or a scalar, defining the label
+for the given value only.
 
 =item OTHER ATTRIBUTES
 
