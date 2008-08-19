@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -634,12 +634,15 @@ sub row_across
     }
 
     my ($tr_attr, $error_td_attr);
-    ($tr_attr, $td_attr, $th_attr, $error_td_attr) = $self->extract_field_table_attr($td_attr, $th_attr); 
+    ($tr_attr, $td_attr, $th_attr, $error_td_attr) = 
+        $self->extract_field_table_attr($td_attr, $th_attr); 
 
-    # Standard row, but using above cell_merge_defaults data
-    my $row = $self->start_tag('tr', $tr_attr);
-    $row .= $self->cell(undef, $field, $lattr, $th_attr);
-    $row .= $self->cell($data->[0], $field, $fattr, $td_attr);
+    my @format = ();
+    my @value = ();
+    push @format, $self->cell(undef, $field, $lattr, $th_attr);
+    push @value,  $self->cell(undef, $field, $lattr, $th_attr, tags => 0);
+    push @format, $self->cell($data->[0], $field, $fattr, $td_attr);
+    push @value,  $self->cell($data->[0], $field, $fattr, $td_attr, tags => 0);
     # Column errors
     if ($self->{defn_t}->{errors_where} eq 'column') {
         my $error = ref $self->{defn_t}->{errors}->{$field} eq 'ARRAY' ?
@@ -648,9 +651,13 @@ sub row_across
                     @{$self->{defn_t}->{errors}->{$field}}) :
             sprintf($self->{defn_t}->{errors}->{$field} || '&nbsp;',
                 $self->{defn_t}->{_labels}->{$field});
-        $row .= $self->cell_tags($error, 1, $field, $error_td_attr);
+        push @format, $self->cell_tags($error, 1, $field, $error_td_attr);
     }
-    # End row
+
+    # Generate output
+    $tr_attr = { %$tr_attr, %{ $self->tr_attr($rownum, \@value) } };
+    my $row = $self->start_tag('tr', $tr_attr);
+    $row .= join '', @format;
     $row .= $self->end_tag('tr', $tr_attr) . "\n";
 
     return $row;
@@ -725,6 +732,7 @@ sub submit
     my $cols = $defn->{errors_where} && 
                $defn->{errors_where} eq 'column' ? 3 : 2;
     if ($arg{table}) {
+        $tr_attr = { %$tr_attr, %{$self->tr_attr(1, [ 'Submit', $out ])} };
         return $self->start_tag('tr', $tr_attr) .
                $self->start_tag('td', { colspan => $cols, align => 'center', %$td_attr }) . "\n" .
                $out .
