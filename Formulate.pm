@@ -655,7 +655,7 @@ sub row_across
     }
 
     # Generate output
-    $tr_attr = { %$tr_attr, %{ $self->tr_attr($rownum, \@value) } };
+    $tr_attr = { %$tr_attr, %{ $self->tr_attr($rownum, \@value, $data) } };
     my $row = $self->start_tag('tr', $tr_attr);
     $row .= join '', @format;
     $row .= $self->end_tag('tr', $tr_attr) . "\n";

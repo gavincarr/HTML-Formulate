@@ -1,6 +1,6 @@
 # Testing per-field table attributes
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -85,7 +85,6 @@ report $form, "submit1";
 is($form, $result{submit1}, "submit buttons");
 
 # Code tr
-$ENV{FORMULATE_DEBUG} = 1;
 $form = $f->render($d, {
   submit => [ qw(save cancel) ],
   tr => {
@@ -100,4 +99,25 @@ $form = $f->render($d, {
 });
 report $form, "tr_code";
 is($form, $result{tr_code}, "code tr elt");
+
+# Code tr 2
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  tr => {
+    class => sub {
+      my ($r, $d) = @_;
+      return unless $d;
+      my $data = $d->[0];
+      return "class_$data->{emp_id}";
+    },  
+    id => sub {
+      my ($r, $d) = @_;
+      my $name = lc $r->[0];
+      $name =~ s/\s+/_/g;
+      return "row_$name";
+    },
+  },
+});
+report $form, "tr_code_2";
+is($form, $result{tr_code_2}, "code tr elt 2");
 

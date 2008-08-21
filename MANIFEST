@@ -58,6 +58,7 @@ t/t08/no_fields2
 t/t09/standard1
 t/t09/submit1
 t/t09/tr_code
+t/t09/tr_code_2
 t/t10/external_submits
 t/t10/external_submits2
 t/t10/inherited_attributes
