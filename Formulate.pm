@@ -432,6 +432,7 @@ sub cell_content
                 }
                 my $input = $self->start_tag('input', {
                     %{$fattr->{input_attr}}, name => $field, type => 'radio', 
+                    ($self->{defn_t}->{use_name_as_id} ? (id => "${field}_$i") : ()),
                     (defined $v ? (value => $v) : ()),
                     (defined $value && ! ref $value && defined $v && $v eq $value
                         ? (checked => 'checked') 

@@ -72,6 +72,7 @@ t/t12/subrefs2
 t/t13/simple1
 t/t13/subrefs
 t/t13/subrefs2
+t/t13/use_name_as_id
 t/t14/auto
 t/t14/empty
 t/t14/explicit

@@ -1,6 +1,6 @@
 # radio list tests
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -147,6 +147,21 @@ $form = $f->render($d, {
 report $form, "subrefs2";
 is($form, $result{subrefs2}, "subrefs, hashref vlabels");
 
+# Subrefs - vlabels returns hashref
+$form = $f->render($d, {
+  fields => [ qw(emp_id emp_name emp_division) ],
+  use_name_as_id => 1,
+  field_attr => { 
+    emp_division => {
+      type => 'radio',
+      # subref values, returning arrayref
+      values => sub { [ qw(one two three four five) ] },
+      # subref vlabels, returning hashref
+      vlabels => sub { { one => 'ABC', two => 'DEF', three => 'GHI', four => 'JKL', five => 'MNO' } },
+    },
+  },
+});
+report $form, "use_name_as_id";
+is($form, $result{use_name_as_id}, "radio use_name_as_id");
 
-# arch-tag: 83200b8d-a753-4b7f-887c-99ce9bc0052e
 
