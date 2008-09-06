@@ -1,7 +1,7 @@
 package HTML::Formulate;
 
 use 5.000;
-use HTML::Tabulate 0.21;
+use HTML::Tabulate 0.30;
 use Carp;
 use strict;
 
