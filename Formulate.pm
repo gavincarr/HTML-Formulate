@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -640,8 +640,10 @@ sub row_across
 
     my @format = ();
     my @value = ();
-    push @format, $self->cell(undef, $field, $lattr, $th_attr);
-    push @value,  $self->cell(undef, $field, $lattr, $th_attr, tags => 0);
+    if ($self->{defn_t}->{labels}) {
+      push @format, $self->cell(undef, $field, $lattr, $th_attr);
+      push @value,  $self->cell(undef, $field, $lattr, $th_attr, tags => 0);
+    }
     push @format, $self->cell($data->[0], $field, $fattr, $td_attr);
     push @value,  $self->cell($data->[0], $field, $fattr, $td_attr, tags => 0);
     # Column errors
@@ -730,12 +732,14 @@ sub submit
     }
 
     # Build submit line
-    my $cols = $defn->{errors_where} && 
-               $defn->{errors_where} eq 'column' ? 3 : 2;
     if ($arg{table}) {
+        my $cols = 2;
+        $cols++ if $defn->{errors_where} && $defn->{errors_where} eq 'column';
+        $cols-- if ! $self->{defn_t}->{labels};
+        my %colspan = $cols > 1 ? ( colspan => $cols ) : ();
         $tr_attr = { %$tr_attr, %{$self->tr_attr(1, [ 'Submit', $out ])} };
         return $self->start_tag('tr', $tr_attr) .
-               $self->start_tag('td', { colspan => $cols, align => 'center', %$td_attr }) . "\n" .
+               $self->start_tag('td', { %colspan, align => 'center', %$td_attr }) . "\n" .
                $out .
                $self->end_tag('td') . 
                $self->end_tag('tr') . "\n";

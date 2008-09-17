@@ -1,6 +1,6 @@
 # Miscellaneous label tests
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -48,6 +48,14 @@ my $f = HTML::Formulate->new({
   },
 });
 my $form;
+
+# No labels
+$form = $f->render($d, {
+  fields => [ qw(emp_id emp_name emp_title) ],
+  labels => 0,
+});
+report $form, "nolabels";
+is($form, $result{nolabels}, "no labels");
 
 # Auto labels
 $form = $f->render($d, {

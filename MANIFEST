@@ -76,6 +76,7 @@ t/t13/use_name_as_id
 t/t14/auto
 t/t14/empty
 t/t14/explicit
+t/t14/nolabels
 t/t15/login
 t/t15/register
 t/t16/login
