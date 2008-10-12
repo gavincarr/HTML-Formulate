@@ -60,9 +60,13 @@ t/t09/submit1
 t/t09/tr_code
 t/t09/tr_code_2
 t/t10/external_submits
+t/t10/external_submits_both
+t/t10/external_submits_top
 t/t10/external_submits2
 t/t10/inherited_attributes
 t/t10/table_submits
+t/t10/table_submits_both
+t/t10/table_submits_top
 t/t11/format_select
 t/t11/format_simple
 t/t12/repeat_values

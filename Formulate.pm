@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -23,8 +23,10 @@ my %VALID_ARG = (
     formtype => 'SCALAR',
     # primkey: primary key field, or list of primary key fields (for composites)
 #   primkey => 'SCALAR/ARRAY',
-    # submit: list of submit/button/reset elements at end of form
+    # submit: list of submit/button/reset elements for form
     submit => 'SCALAR/ARRAY',
+    # submit_location: location of submit elements - top/bottom/both, default: bottom
+    submit_location => 'SCALAR',
     # hidden: list of fields to render as hiddens, or hashref of field/value 
     #   pairs; default: none
     hidden => 'ARRAY/HASH',
@@ -114,7 +116,6 @@ sub init
         style => 'across',
         labels => 1,
         hidden => {},
-#       submit => [ 'submit' ],
         xhtml => 1,
         use_name_as_id => 0,
         null => '&nbsp;',
@@ -709,17 +710,19 @@ sub submit
 
     # Build submit buttons input fields
     my ($tr_attr, $td_attr);
-    my $first = 1;
     for my $field (@{$defn->{submit}}) {
         my ($fattr, $td) = $self->cell_merge_defaults(1, $field);
         my $tr;
         ($tr, $td) = $self->extract_field_table_attr($td);
         # Save tr/td attributes from first submit
-        if ($first) {
-            $tr_attr = $tr;
-            $td_attr = $td;
-            $first = 0;
+        if (! $defn->{submit_attr}) {
+            $defn->{submit_attr} = {
+                tr_attr => $tr,
+                td_attr => $td,
+            };
         }
+        $tr_attr = $defn->{submit_attr}->{tr_attr};
+        $td_attr = $defn->{submit_attr}->{td_attr};
         my $field_id = lc $field;
         $field_id =~ s/\s+/_/g;
         my $field_value = $fattr->{value} || $fattr->{label} || 
@@ -824,7 +827,19 @@ sub start_table
     my $out = '';
     $out .= $self->start_tag('form',$self->{defn_t}->{form}) . "\n"
         if $self->{defn_t}->{form};
-    $out .= $self->SUPER::start_table();
+    my $submit_location = $self->{defn_t}->{submit_location} || 'bottom';
+    if ($submit_location eq 'bottom') {
+      $out .= $self->SUPER::start_table();
+    }
+    elsif (exists $self->{defn_t}->{submit_table} && 
+                  $self->{defn_t}->{submit_table} == 0) {
+      $out .= $self->submit();
+      $out .= $self->SUPER::start_table();
+    } 
+    else {
+      $out .= $self->SUPER::start_table();
+      $out .= $self->submit(table => 1);
+    }
     return $out;
 }
 
@@ -835,8 +850,12 @@ sub end_table
 {
     my ($self) = @_;
     my $out = '';
-    if (exists $self->{defn_t}->{submit_table} && 
-             ! $self->{defn_t}->{submit_table}) {
+    my $submit_location = $self->{defn_t}->{submit_location} || 'bottom';
+    if ($submit_location eq 'top') {
+      $out .= $self->SUPER::end_table();
+    }
+    elsif (exists $self->{defn_t}->{submit_table} && 
+                  $self->{defn_t}->{submit_table} == 0) {
       $out .= $self->SUPER::end_table();
       $out .= $self->submit();
     }
@@ -1138,6 +1157,12 @@ producing red bold error messages, which can be overridden by
 defining a CSS 'error' class.
 
 =back
+
+=item submit_location
+
+Scalar, either 'bottom' or 'top' or 'both'. Location of submit 
+elements. Default: bottom.
+
 
 =head1 FIELD ATTRIBUTE ARGUMENTS
 

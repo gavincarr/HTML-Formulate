@@ -1,6 +1,6 @@
 # Submit location tests
 
-use Test::More tests => 5;
+use Test::More tests => 9;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -55,6 +55,22 @@ $form = $f->render($d, {
 report $form, "table_submits";
 is($form, $result{table_submits}, "in-table submits");
 
+# In-table submits, submit_location 'top'
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  submit_location => 'top',
+});
+report $form, "table_submits_top";
+is($form, $result{table_submits_top}, "in-table submits, location top");
+
+# In-table submits, submit_location 'both'
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  submit_location => 'both',
+});
+report $form, "table_submits_both";
+is($form, $result{table_submits_both}, "in-table submits, location both");
+
 # Out-of-table submits
 $form = $f->render($d, {
   submit => [ qw(save cancel) ],
@@ -91,5 +107,30 @@ $form = $f->render($d, {
 report $form, "inherited_attributes";
 is($form, $result{inherited_attributes}, "filter inherited attributes");
 
+# Out-of-table submits with location 'top'
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  submit_location => 'top',
+  field_attr => {
+    -submit => {
+      table => 0,
+    },
+  },
+});
+report $form, "external_submits_top";
+is($form, $result{external_submits_top}, "external submits, location top");
+
+# Out-of-table submits with location 'both'
+$form = $f->render($d, {
+  submit => [ qw(save cancel) ],
+  submit_location => 'both',
+  field_attr => {
+    -submit => {
+      table => 0,
+    },
+  },
+});
+report $form, "external_submits_both";
+is($form, $result{external_submits_both}, "external submits, location both");
 
 # arch-tag: 2ffd353c-080f-4a7d-8217-b57855e8f06d
