@@ -1,6 +1,7 @@
 # radio list tests
 
 use Test::More tests => 8;
+use Test::Differences;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 

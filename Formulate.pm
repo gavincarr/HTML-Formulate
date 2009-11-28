@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.14';
+$VERSION = '0.15';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -58,7 +58,7 @@ my %VALID_FIELDS = (
 my %FIELD_ATTR = (
     # type: how this field is rendered on the form (roughly an <input /> type)
 #   type => [ qw(text textarea password select hidden display static omit)],
-    type => [ qw(text textarea password select checkbox radio hidden display static omit)],
+    type => [ qw(text textarea password file image button select checkbox radio hidden display static omit)],
     # datatype: the validation datatype for this field (deprecated?)
 #   datatype => 'SCALAR/ARRAY',
     # required: boolean
@@ -70,8 +70,8 @@ my %FIELD_ATTR = (
     vlabels => 'ARRAY/HASH/CODE',
 );
 # Attributes applicable to the various input-type fields
-my %TEXT_ATTR = map { $_ => 1 } qw(accesskey checked disabled id maxlength name notab onblur onchange onclick onfocus onselect readonly selected size tabindex taborder value vlabel);
-my %INPUT_ATTR = map { $_ => 1 } qw(accesskey checked disabled id name notab onblur onchange onclick onfocus onselect readonly selected tabindex taborder value vlabel);
+my %TEXT_ATTR = map { $_ => 1 } qw(accesskey disabled id maxlength name notab onblur onchange onclick onfocus onselect readonly selected size tabindex taborder value vlabel);
+my %INPUT_ATTR = map { $_ => 1 } qw(accesskey checked disabled id name notab onblur onchange onclick onfocus onselect readonly selected size tabindex taborder value vlabel);
 my %SELECT_ATTR = map { $_ => 1 } qw(disabled id multiple name onblur onchange onfocus size tabindex vlabel);
 my %TEXTAREA_ATTR = map { $_ => 1 } qw(accesskey cols disabled id name onblur onchange onfocus onselect readonly rows tabindex vlabel wrap);
 my %TABLE_ATTR = map { $_ => 1 } qw(tr th td);
@@ -1218,7 +1218,8 @@ attributes, and then per-field attributes.
 An enum defining what sort of control to present for this field, usually 
 being an HTML input type (or equivalent). Current valid values are:
 
-  text textarea password radio select checkbox hidden display static omit
+  text textarea password radio select checkbox hidden file image button
+  display static omit
 
 Of these display, static, and omit do not have obvious HTML correlates - 
 these mean:
