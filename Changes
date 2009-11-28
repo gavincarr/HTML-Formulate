@@ -1,0 +1,98 @@
+------------------------------------------------------------
+revno: 14
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Sat 2009-11-28 15:44:43 +0000
+message:
+  Add missing file, image, and button types; bump to version 0.15.
+------------------------------------------------------------
+revno: 13
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Mon 2008-10-13 09:41:57 +1100
+message:
+  Add support for submit_location; bump version to 0.14.
+------------------------------------------------------------
+revno: 12
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Thu 2008-09-18 09:52:22 +1000
+message:
+  Fix no labels handling and add unit tests; bump to version 0.13.
+------------------------------------------------------------
+revno: 11
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Sat 2008-09-06 20:27:15 +1000
+message:
+  Bump Tabulate requirement to latest 0.30.
+------------------------------------------------------------
+revno: 10
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Fri 2008-08-22 18:18:39 +1000
+message:
+  Tweak use_name_as_id handling on radio fields to make unique.
+------------------------------------------------------------
+revno: 9
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Fri 2008-08-22 08:53:35 +1000
+message:
+  Pass data row through to tr_attr() in row_across.
+------------------------------------------------------------
+revno: 8
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Tue 2008-08-19 21:34:20 +1000
+message:
+  Add tr sub support for forms; bump to version 0.12.
+------------------------------------------------------------
+revno: 7
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Sat 2008-08-16 14:23:22 +1000
+message:
+  Add composite field handling per HTML::Tabulate 0.30; bump to 0.11.
+------------------------------------------------------------
+revno: 6
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Sun 2008-05-25 16:10:08 +1000
+message:
+  Tweak to MANIFEST.
+------------------------------------------------------------
+revno: 5
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Wed 2008-04-30 20:04:32 +1000
+message:
+  Add first-pass radio button support; bump to version 0.10.
+------------------------------------------------------------
+revno: 4
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Thu 2008-01-24 21:21:12 +1100
+message:
+  Allow subref vlabel parameter with statics; make extra error fields also sprintf.
+------------------------------------------------------------
+revno: 3
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Thu 2008-01-24 17:38:40 +1100
+message:
+  Update errors perldocs to make sprintf handling explicit.
+------------------------------------------------------------
+revno: 2
+committer: Gavin Carr <gavin@openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Wed 2008-01-23 21:25:02 +1100
+message:
+  Add use_name_as_id attribute; bump to version 0.09.
+------------------------------------------------------------
+revno: 1
+committer: Gavin Carr <gavin@nox.openfusion.com.au>
+branch nick: HTML-Formulate
+timestamp: Mon 2007-06-11 18:29:42 +1000
+message:
+  Initial impmort.
