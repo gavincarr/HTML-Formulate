@@ -1,6 +1,6 @@
 package HTML::Formulate;
 
-use 5.000;
+use 5.005;
 use HTML::Tabulate 0.30;
 use Carp;
 use strict;
@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.15';
+$VERSION = '0.16';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
