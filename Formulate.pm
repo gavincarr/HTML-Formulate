@@ -1,7 +1,7 @@
 package HTML::Formulate;
 
 use 5.005;
-use HTML::Tabulate 0.30;
+use HTML::Tabulate 0.39;
 use Carp;
 use strict;
 
@@ -151,51 +151,43 @@ sub init
 }
 
 #
-# Filter Tabulate td_attr into td_attr and input_attr
-#
-sub cell_merge_defaults
+# Further split tx_attr into tx_attr and input_attr
+sub cell_split_out_tx_attr
 {
-    my ($self, $row, $field) = @_;
+    my $self = shift;
+    my ($field) = @_;
 
-    # Call base version
-    my ($fattr, $td_attr) = $self->SUPER::cell_merge_defaults($row, $field);
-    return ($fattr, $td_attr) if $self->{defn_t}->{formtype} eq 'table';
+    $self->SUPER::cell_split_out_tx_attr(@_);
 
-    # Filter td_attr into td_attr and input_attr
-    my $input_attr = {};
-    my $td2_attr = {};
-    for (keys %$td_attr) {
-        if ($TEXT_ATTR{$_} || $TEXTAREA_ATTR{$_} || $SELECT_ATTR{$_}) {
-            if ($fattr->{type} && $fattr->{type} eq 'select') {
-                $input_attr->{$_} = $td_attr->{$_} if $SELECT_ATTR{$_};
-            }
-            elsif ($fattr->{type} && $fattr->{type} eq 'textarea') {
-                $input_attr->{$_} = $td_attr->{$_} if $TEXTAREA_ATTR{$_};
-            }
-            elsif (! defined $fattr->{type} ||
-                             $fattr->{type} eq '' ||
-                             $fattr->{type} eq 'text' || 
-                             $fattr->{type} eq 'password') {
-                $input_attr->{$_} = $td_attr->{$_} if $TEXT_ATTR{$_};
-            }
-            else {
-                $input_attr->{$_} = $td_attr->{$_} if $INPUT_ATTR{$_};
+    for my $attr (qw(label_attr tfoot_attr data_attr)) {
+        my $type = $self->{defn_t}->{$attr}->{$field}->{type} || '';
+        $self->{defn_t}->{$attr}->{$field}->{input_attr} = {};
+
+        for (keys %{ $self->{defn_t}->{$attr}->{$field}->{tx_attr} }) {
+            if ($TEXT_ATTR{$_} || $TEXTAREA_ATTR{$_} || $SELECT_ATTR{$_}) {
+                my $val = delete $self->{defn_t}->{$attr}->{$field}->{tx_attr}->{$_};
+
+                if ($type eq 'select') {
+                    $self->{defn_t}->{$attr}->{$field}->{input_attr}->{$_} = $val
+                        if $SELECT_ATTR{$_};
+                }
+                elsif ($type eq 'textarea') {
+                    $self->{defn_t}->{$attr}->{$field}->{input_attr}->{$_} = $val
+                        if $TEXTAREA_ATTR{$_};
+                }
+                elsif (! $type ||
+                         $type eq 'text' ||
+                         $type eq 'password') {
+                    $self->{defn_t}->{$attr}->{$field}->{input_attr}->{$_} = $val
+                        if $TEXT_ATTR{$_};
+                }
+                else {
+                    $self->{defn_t}->{$attr}->{$field}->{input_attr}->{$_} = $val
+                        if $INPUT_ATTR{$_};
+                }
             }
         }
-        # Pass all other attributes up to the enclosing TD
-        else {
-            $td2_attr->{$_} = $td_attr->{$_};
-        }
     }
-
-    # If data, save td2_attr and input_attr back into $self->{defn_t}
-    if ($row) {
-        $fattr->{td_attr} = $td2_attr;
-        $fattr->{input_attr} = $input_attr;
-        $self->{defn_t}->{field_attr}->{$field} = $fattr;
-    }
-
-    return ($fattr, $td2_attr);
 }
 
 # One-off or dataset-specific presentation definition munging
@@ -615,8 +607,11 @@ sub row_across
 
     # Need to call cell_merge_defaults early, since there may be 
     # settings that affect the whole row (single row table assumed)
-    my ($lattr, $th_attr) = $self->cell_merge_defaults(undef, $field);
-    my ($fattr, $td_attr) = $self->cell_merge_defaults($rownum, $field);
+    $self->cell_merge_defaults($rownum, $field);
+    my $lattr = $self->{defn_t}->{label_attr}->{$field};
+    my $th_attr = $lattr->{tx_attr};
+    my $fattr = $self->{defn_t}->{data_attr}->{$field};
+    my $td_attr = $fattr->{tx_attr};
 
     # Special handling for 'hidden' and 'omit' fields
     my $type = $fattr->{type} || '';
@@ -711,7 +706,9 @@ sub submit
     # Build submit buttons input fields
     my ($tr_attr, $td_attr);
     for my $field (@{$defn->{submit}}) {
-        my ($fattr, $td) = $self->cell_merge_defaults(1, $field);
+        $self->cell_merge_defaults(1, $field);
+        my $fattr = $self->{defn_t}->{data_attr}->{$field};
+        my $td = $fattr->{tx_attr};
         my $tr;
         ($tr, $td) = $self->extract_field_table_attr($td);
         # Save tr/td attributes from first submit

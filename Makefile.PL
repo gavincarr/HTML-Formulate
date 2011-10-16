@@ -4,7 +4,7 @@ use inc::Module::Install;
 name            'HTML-Formulate';
 all_from        'Formulate.pm';
 
-requires        'HTML::Tabulate'    => 0.30;
+requires        'HTML::Tabulate'    => 0.39;
 requires        'Carp'              => 0;
 test_requires   'Test::More'        => 0;
 test_requires   'Test::Differences' => 0;
