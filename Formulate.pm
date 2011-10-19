@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
