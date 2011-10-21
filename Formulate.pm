@@ -1196,6 +1196,14 @@ which attributes are defined is global -defaults, then -required
 attributes, and then per-field attributes, allowing defaults to 
 be overridden as required.
 
+For example, to turn off the default 'required' field styling,
+you could define -required as follows:
+
+  -required => {
+    th => {},
+    label_format => '',
+  }
+
 =item -errors
 
 A hashref of field attributes to be used for any field defined
