@@ -1,6 +1,6 @@
 # select list tests
 
-use Test::More tests => 8;
+use Test::More tests => 10;
 BEGIN { use_ok( HTML::Formulate ) }
 use strict;
 
@@ -163,6 +163,33 @@ $form = $f->render($d, {
 report $form, "subrefs2";
 is($form, $result{subrefs2}, "subrefs, hashref vlabels");
 
+# Selected, xhtml mode
+$d->{emp_division} = 'engineering';
+$form = $f->render($d, {
+  fields => [ qw(emp_id emp_name emp_division) ],
+  field_attr => { 
+    emp_division => {
+      type => 'select',
+      values => [ '', qw(finance hr engineering marketing) ],
+      vlabels => [ qw(Select Finance HR Engineering Marketing) ],
+    },
+  },
+});
+report $form, "selectedx";
+is($form, $result{selectedx}, "selected, xhtml");
 
-# arch-tag: 83200b8d-a753-4b7f-887c-99ce9bc0052e
+# Selected, non-xhtml mode
+$form = $f->render($d, {
+  xhtml => 0,
+  fields => [ qw(emp_id emp_name emp_division) ],
+  field_attr => { 
+    emp_division => {
+      type => 'select',
+      values => [ '', qw(finance hr engineering marketing) ],
+      vlabels => [ qw(Select Finance HR Engineering Marketing) ],
+    },
+  },
+});
+report $form, "selectedn";
+is($form, $result{selectedn}, "selected, non-xhtml");
 
