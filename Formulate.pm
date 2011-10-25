@@ -319,6 +319,7 @@ sub cell_content
 
     # Create <input> (etc.) fields
     my $out = '';
+    my $selected_value = $self->{defn_t}->{xhtml} ? 'selected' : '';
     delete $fattr->{value} 
         if defined $self->{defn_t}->{null} && defined $fattr->{value} &&
             $fattr->{value} eq $self->{defn_t}->{null};
@@ -361,10 +362,9 @@ sub cell_content
                 if (defined $value) {
                     # Multi-values make sense in select contexts
                     if (ref $value eq 'ARRAY') {
-                        $oattr->{selected} = 'selected' 
-                            if grep { $v eq $_ } @$value;
+                        $oattr->{selected} = $selected_value if grep { $v eq $_ } @$value;
                     } else {
-                        $oattr->{selected} = 'selected' if $v eq $value;
+                        $oattr->{selected} = $selected_value if $v eq $value;
                     }
                 }
                 $out .= $self->start_tag('option', $oattr);
@@ -417,10 +417,9 @@ sub cell_content
                 if (defined $value) {
                     # Multi-values make sense in select contexts
                     if (ref $value eq 'ARRAY') {
-                        $oattr->{selected} = 'selected' 
-                            if grep { $v eq $_ } @$value;
+                        $oattr->{selected} = $selected_value if grep { $v eq $_ } @$value;
                     } else {
-                        $oattr->{selected} = 'selected' if $v eq $value;
+                        $oattr->{selected} = $selected_value if $v eq $value;
                     }
                 }
                 my $input = $self->start_tag('input', {
