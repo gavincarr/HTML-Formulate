@@ -46,13 +46,12 @@ The standard:
 
 DEPENDENCIES
 
-This module requires the standard Carp module, and will use CGI::Carp if 
-it's available.
+This module uses my HTML::Tabulate module, as well as Carp.
 
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2003-2004 Gavin Carr
+Copyright (C) 2003-2011 Gavin Carr <gavin@openfusion.com.au>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
