@@ -1,6 +1,12 @@
 ChangeLog
 ---------
 
+[2011-10-28]
+* Bump version to 0.18.
+* Use 'selected' instead of selected="selected" if not in xhtml mode.
+* Add special support for label_colspan = 2.
+* Add a -required example to perldocs.
+
 [2011-10-16]
 * Bump version to 0.17.
 * Bump Tabulate requirement to latest 0.39.
