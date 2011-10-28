@@ -91,6 +91,8 @@ t/t10/table_submits_top
 t/t11/format_select
 t/t11/format_simple
 t/t12/repeat_values
+t/t12/selectedn
+t/t12/selectedx
 t/t12/simple1
 t/t12/subrefs
 t/t12/subrefs2
