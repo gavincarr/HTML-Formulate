@@ -12,7 +12,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -388,7 +388,7 @@ sub cell_content
                 elsif (ref $vlabels eq 'ARRAY') {
                     $vlabel = $vlabels->[$i];
                 }
-                $vlabel = $v if ! defined $vlabel or $vlabel eq '';
+                $vlabel = $v if ! defined $vlabel;
 
                 $out .= $vlabel;
                 $out .= $self->end_tag('option');
