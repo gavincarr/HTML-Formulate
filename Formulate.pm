@@ -164,7 +164,13 @@ sub cell_split_out_tx_attr
         $self->{defn_t}->{$attr}->{$field}->{input_attr} = {};
 
         for (keys %{ $self->{defn_t}->{$attr}->{$field}->{tx_attr} }) {
-            if ($TEXT_ATTR{$_} || $TEXTAREA_ATTR{$_} || $SELECT_ATTR{$_}) {
+            # Attributes like input_class will be mapped as input.class
+            if (m/^input_/) {
+                my $val = delete $self->{defn_t}->{$attr}->{$field}->{tx_attr}->{$_};
+                s/^input_//;
+                $self->{defn_t}->{$attr}->{$field}->{input_attr}->{$_} = $val;
+            }
+            elsif ($TEXT_ATTR{$_} || $TEXTAREA_ATTR{$_} || $SELECT_ATTR{$_}) {
                 my $val = delete $self->{defn_t}->{$attr}->{$field}->{tx_attr}->{$_};
 
                 if ($type eq 'select') {

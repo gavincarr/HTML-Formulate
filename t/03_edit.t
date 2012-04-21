@@ -154,7 +154,7 @@ $form = $f->render($d, {
   fields => [ qw(emp_id emp_name emp_birth_dt) ],
   field_attr => {
     -defaults => { size => 40, maxlength => 40 },
-    emp_name => { size => 60, maxlength => 100 },
+    emp_name => { size => 60, maxlength => 100, class => 'td_class', input_class => 'input_class' },
   },
 });
 report $form, "input_attr";
@@ -199,5 +199,3 @@ report $form, "omit";
 is($form, $result{omit}, "omit fields");
 
 
-
-# arch-tag: 305a158b-2d0d-4fd1-b38b-57b9fa53d2c6
