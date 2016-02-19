@@ -47,7 +47,7 @@ is($form, $result{simple1}, "simple employee create");
 
 my $d = { emp_id => '123', emp_name => 'Fred Flintstone', 
   emp_title => 'CEO', emp_addr_id => '225', emp_birth_dt => '20-10-55',
-  emp_notes => "Started with company in 1983.\nFavourite colour: green.\n",
+  emp_notes => qq(Started with company in 1983.\nFavourite colour: "green".\nFavourite tag: <input>.\n),
   emp_modify_uid => 12, emp_modify_ts => 20031231, 
   emp_create_uid => 6,  emp_create_ts => 20020804,
 };

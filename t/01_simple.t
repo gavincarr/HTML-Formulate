@@ -13,7 +13,7 @@ opendir DATADIR, $test or die "can't open directory $test";
 for (readdir DATADIR) {
   next if m/^\./;
   open FILE, "<$test/$_" or die "can't read $test/$_";
-  { 
+  {
     local $/ = undef;
     $result{$_} = <FILE>;
   }
@@ -37,9 +37,9 @@ sub report {
 my ($f, $form);
 
 $f = HTML::Formulate->new();
-my $d = { emp_id => '123', emp_name => 'Fred Flintstone', 
+my $d = { emp_id => '123', emp_name => 'Fred "Rocky" Flintstone',
   emp_title => 'CEO', emp_addr_id => '225', emp_birth_dt => '20-10-55',
-  emp_modify_uid => 12, emp_modify_ts => 20031231, 
+  emp_modify_uid => 12, emp_modify_ts => 20031231,
   emp_create_uid => 6,  emp_create_ts => 20020804,
 };
 
