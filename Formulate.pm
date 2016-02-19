@@ -2,6 +2,7 @@ package HTML::Formulate;
 
 use 5.005;
 use HTML::Tabulate 0.39;
+use HTML::Entities qw(encode_entities);
 use Carp;
 use strict;
 
@@ -286,15 +287,16 @@ sub prerender_munge
 #
 sub start_tag
 {
-    my $self = shift;
-    my $tag = shift;
-    my $attr = shift;
+    my ($self, $tag, $attr, $close, $extra) = @_;
     if ($self->{defn_t}->{use_name_as_id} && 
         $tag =~ qr/^(input|select|textarea)$/ && 
         exists $attr->{name}) {
       $attr->{id} ||= $attr->{name};
     }
-    return $self->SUPER::start_tag($tag, $attr, @_);
+    if ($attr->{value}) {
+        $attr->{value} = $self->_escape_value($attr->{value}, $extra->{escape});
+    }
+    return $self->SUPER::start_tag($tag, $attr, $close, $extra);
 }
 
 # -------------------------------------------------------------------------
@@ -306,6 +308,7 @@ sub cell_content
     my ($row, $field, $fattr) = @_;
     $fattr ||= $self->{defn_t}->{field}->{$field} || {};
     $fattr->{type} ||= 'text' if $row;
+    my $extra = { escape => $fattr->{escape} };
 
     # No special handling required for labels or 'table' forms or composites
     if (! defined $row or 
@@ -341,11 +344,11 @@ sub cell_content
           }
         }
         else {
-          $out .= $value;
+          $out .= $self->_escape_value($value, $fattr->{escape});
         }
         delete $fattr->{vlabel};
         $out .= $self->start_tag('input', 
-            { type => 'hidden', name => $field, value => $value }, 'close') 
+            { type => 'hidden', name => $field, value => $value }, 'close', $extra)
             if $fattr->{type} eq 'static';
     }
     # Select fields
@@ -358,7 +361,7 @@ sub cell_content
         }
         if (ref $values eq 'ARRAY' && @$values) {
             $out .= $self->start_tag('select', 
-                { %{$fattr->{input_attr}}, name => $field });
+                { %{$fattr->{input_attr}}, name => $field }, 0, $extra);
             my $vlabels = $fattr->{vlabels} || {};
             # Iterate over values, creating options
             for (my $i = 0; $i <= $#$values; $i++) {
@@ -373,7 +376,7 @@ sub cell_content
                         $oattr->{selected} = $selected_value if $v eq $value;
                     }
                 }
-                $out .= $self->start_tag('option', $oattr);
+                $out .= $self->start_tag('option', $oattr, 0, $extra);
                 my $vlabel = '';
                 if (ref $vlabels eq 'CODE') {
                     # Two styles are supported for vlabel subroutines - the sub
@@ -435,7 +438,7 @@ sub cell_content
                     (defined $value && ! ref $value && defined $v && $v eq $value
                         ? (checked => 'checked') 
                         : ()),
-                }, 'close');
+                }, 'close', $extra);
                 my $vlabel = '';
                 if (ref $vlabels eq 'CODE') {
                     # Two styles are supported for vlabel subroutines - the sub
@@ -468,30 +471,41 @@ sub cell_content
     # Hidden fields
     elsif ($fattr->{type} eq 'hidden') {
         $out .= $self->start_tag('input', 
-            { type => 'hidden', name => $field, value => $value }, 'close');
+            { type => 'hidden', name => $field, value => $value }, 'close', $extra);
     }
     # Textareas
     elsif ($fattr->{type} eq 'textarea') {
         $out .= $self->start_tag('textarea',
-            { %{$fattr->{input_attr}}, name => $field, });
-        $out .= $value . $self->end_tag('textarea');
+            { %{$fattr->{input_attr}}, name => $field, }, 0, $extra);
+        $out .= $self->_escape_value($value, $fattr->{escape});
+        $out .= $self->end_tag('textarea');
     }
     # Input fields
     else {
         $out .= $self->start_tag('input',
              { %{$fattr->{input_attr}},  name => $field, 
-               type => $fattr->{type}, value => $value }, 'close');
+               type => $fattr->{type}, value => $value }, 'close', $extra);
     }
 
     # Now format using $out as value
     return $self->SUPER::cell_format($out, $fattr, $row, $field);
 }
 
-# Derived cell_format_escape - escaping not supported
+sub _escape_value
+{
+    my ($self, $data, $escape) = @_;
+    $escape = 1 if ! defined $escape;
+    if ($data && $escape) {
+      $data = encode_entities($data);
+    }
+    return $data;
+}
+
+# Derived cell_format_escape - noop here
+# We escape values in start_tag, and tag body value in cell_content
 sub cell_format_escape
 {
-    my $self = shift;
-    my ($data) = @_;
+    my ($self, $data) = @_;
     return $data;
 }
 
@@ -1398,5 +1412,5 @@ same terms as perl itself.
 
 =cut
 
-# arch-tag: 59168fb3-8198-4caf-aed3-18ec54532bfd
+# vim:sw=4
 
