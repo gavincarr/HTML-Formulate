@@ -1,6 +1,14 @@
 ChangeLog
 ---------
 
+[2016-02-19]
+* Bump version to 0.20.
+* Handle value html-escaping properly with HTML::Entities.
+
+[2012-04-21]
+* Bump version to 0.19.
+* Add support for input_ prefixed attributes e.g. input_class.
+
 [2011-10-28]
 * Bump version to 0.18.
 * Use 'selected' instead of selected="selected" if not in xhtml mode.

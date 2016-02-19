@@ -13,7 +13,7 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(&render);
 %EXPORT_TAGS = ();
 
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 # Additional valid arguments, fields, and field attributes to those of
 #   HTML::Tabulate
@@ -1405,7 +1405,7 @@ Gavin Carr, E<lt>gavin@openfusion.com.auE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2003-2004, Open Fusion Pty Ltd. All Rights Reserved.
+Copyright 2003-2016, Gavin Carr.
 
 This program is free software. You may copy or redistribute it under the 
 same terms as perl itself.
